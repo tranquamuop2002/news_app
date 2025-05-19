@@ -1,4 +1,4 @@
-package com.example.news_app_mvvm.data.model
+package com.example.news_app_mvvm.domain.model
 
 data class News(
     val userId: Int,

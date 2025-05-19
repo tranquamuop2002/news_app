@@ -1,6 +1,7 @@
 package com.example.news_app_mvvm.di
 
 import com.example.news_app_mvvm.data.remote.service.ApiService
+import com.example.news_app_mvvm.data.remote.utils.RetrofitHelper
 import com.example.news_app_mvvm.data.repository.NewsRepositoryImpl
 import com.example.news_app_mvvm.domain.repository.NewsRepository
 import com.example.news_app_mvvm.domain.usecase.GetNewsUseCase
@@ -21,7 +22,7 @@ object AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.example.com/")
+            .baseUrl(RetrofitHelper.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -36,13 +37,12 @@ object AppModule {
     // Repository
     @Provides
     @Singleton
-    fun provideNewsRepository(api: ApiService): NewsRepository {
-        return NewsRepositoryImpl(api)
+    fun provideNewsRepository(apiService: ApiService): NewsRepository {
+        return NewsRepositoryImpl(apiService)
     }
 
     // UseCase
     @Provides
-    @Singleton
     fun provideGetNewsUseCase(newsRepository: NewsRepository): GetNewsUseCase {
         return GetNewsUseCase(newsRepository)
     }
