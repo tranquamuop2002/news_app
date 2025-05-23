@@ -4,33 +4,39 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 
-abstract class BaseAdapter<T, VB : ViewBinding>(
-    private val bindingInflater: (LayoutInflater, ViewGroup, Boolean) -> VB
-) : RecyclerView.Adapter<BaseAdapter<T, VB>.BaseViewHolder>() {
+abstract class BaseAdapter<T>(
+    private val layoutResId: Int,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val items = mutableListOf<T>()
+    private val dataSet = mutableListOf<T>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(newItems: List<T>) {
-        items.clear()
-        items.addAll(newItems)
+    fun setData(data: List<T>) {
+        dataSet.clear()
+        dataSet.addAll(data)
         notifyDataSetChanged()
     }
 
-    abstract fun bind(binding: VB, item: T, position: Int)
-
-    inner class BaseViewHolder(val binding: VB) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        val binding = bindingInflater(LayoutInflater.from(parent.context), parent, false)
-        return BaseViewHolder(binding)
+    fun addData(data: List<T>) {
+        val start = dataSet.size
+        dataSet.addAll(data)
+        notifyItemRangeInserted(start, data.size)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        bind(holder.binding, items[position], position)
+    fun getItem(position: Int): T = dataSet[position]
+
+    override fun getItemCount() = dataSet.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(layoutResId, parent, false)
+        return object : RecyclerView.ViewHolder(view) {}
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = dataSet[position]
+        bind(holder, item)
+    }
+
+    abstract fun bind(holder: RecyclerView.ViewHolder, item: T)
 }

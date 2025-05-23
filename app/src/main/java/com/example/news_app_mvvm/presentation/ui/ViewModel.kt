@@ -15,15 +15,13 @@ class MainViewModel @Inject constructor(private val getNewsUseCase: GetNewsUseCa
 
     private val _newLiveData = MutableLiveData<Boolean>()
     val newLiveData: MutableLiveData<Boolean> get() = _newLiveData
-
     val newsList = mutableListOf<News>()
 
     fun getNews() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response =  getNewsUseCase.getNews()
-            val updatedList = newsList + response
+            val response = getNewsUseCase.getNews()
             newsList.clear()
-            newsList.addAll(updatedList)
+            newsList.addAll(response)
             _newLiveData.postValue(true)
         }
     }
